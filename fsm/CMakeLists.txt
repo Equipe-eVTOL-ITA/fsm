@@ -24,8 +24,8 @@ include_directories(include)
 
 # define a library target called my_value_converter_library
 add_library(fsm_lib SHARED
-  src/State.cpp
-  src/fsm.cpp
+  src/fsm/state.cpp
+  src/fsm/fsm.cpp
 )
 ament_export_targets(fsm_lib HAS_LIBRARY_TARGET)
  
