@@ -7,7 +7,7 @@ namespace fsm {
 
 class ValueBase {
 public:
-  virtual ~ValueBase() = 0;
+  virtual ~ValueBase() {};
 };
 
 }; // namespace fsm

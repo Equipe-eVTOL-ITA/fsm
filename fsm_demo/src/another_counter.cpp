@@ -5,17 +5,21 @@ using namespace fsm;
 
 class FooState : public State {
 public:
-    FooState() : State({{"%10", "BAR"},{">100", "FINISHED"}}) {}
+    FooState() : State({{"%10", "BAR"},
+                        {">100", "FINISHED"},
+                        {"SEG_FAULT", "SEG_FAULT"}}) {}
 
     std::string act(Blackboard &blackboard) override {
-        (void) blackboard;
+
         int* foo_counter_ptr = blackboard.get<int>("foo_counter");
-        //blackboard.set<int>("foo_counter", *foo_counter_ptr + 1);
+        if (foo_counter_ptr == nullptr) return "SEG_FAULT"; // always check
+
+        blackboard.set<int>("foo_counter", *foo_counter_ptr + 1);
         
         if ((*foo_counter_ptr % 10) == 0)
             return "%10";
         
-        if ((*foo_counter_ptr > 100) == 0)
+        if (*foo_counter_ptr > 100)
             return ">100";
 
         return ""; // it will on FooState
@@ -25,13 +29,19 @@ public:
 
 class BarState : public State {
 public:
-    BarState() : State({{"TRUE", "FOO"}}), counter_{0} {}
+    BarState() : State({{"TRUE", "FOO"},
+                        {"SEG_FAULT", "SEG_FAULT"}}), 
+                counter_{0} {}
 
     std::string act(Blackboard &blackboard) override {
-        (void) blackboard;
+
         counter_++;
+
         int* foo_counter_ptr = blackboard.get<int>("foo_counter");
+        if (foo_counter_ptr == nullptr) return "TRUE"; // always check return
+
         std::cout << "[BAR STATE " + std::to_string(counter_) + "] " << *foo_counter_ptr << std::endl;
+
         return "TRUE";
     }
 private: 
@@ -40,8 +50,8 @@ private:
 
 class CounterFSM : public FSM {
 public:
-    CounterFSM() : FSM({"FINISHED"}) {
-        //this->blackboard_set<int>("foo_counter", new int(0));
+    CounterFSM() : FSM({"FINISHED","SEG_FAULT"}) {
+        this->blackboard_set<int>("foo_counter", 0);
     }
 };
 
@@ -53,5 +63,9 @@ int main() {
     while (!counter_fsm.is_finished())
         counter_fsm.execute();
 
-    std::cout << counter_fsm.get_fsm_outcome() << std::endl;
+    std::cout << counter_fsm.get_fsm_outcome()
+              << std::endl  
+              << "[foo_counter] : "
+              << *counter_fsm.blackboard_get<int>("foo_counter")
+              << std::endl;
 }

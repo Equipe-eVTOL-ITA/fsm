@@ -7,44 +7,41 @@
 #include <memory>
 #include <string>
 
+#include <iostream>
+
 namespace fsm {
 
 class Blackboard {
 public:
 
     Blackboard() = default;
-
-    ~Blackboard() {
-        for (auto& [key, value] : values_)
-            delete value;
-    }
+    ~Blackboard();
 
     template <typename T>
     void set(const std::string& key, T* value) {
         
-        auto it = values_.find(key);
-
-        if (it == values_.end()) {
-            this->values_.emplace(key, new Value(value));
-        }
+        if (this->contains(key))
+            ((Value<T> *)this->values_.at(key))->set(value);
+    
         else {
-            //((Value<T> *)this->values_.at(key))->set(value);
-            ((Value<T> *)it->second)->set(value);
+            //std::cout << "1\n";
+            //int i =0;
+            //auto hm = new Value<T>(value);
+            this->values_.insert({key, new Value<T>(value)});
         }
 
     }
 
     template <typename T>
     void set(const std::string& key, T value) {
-        
-        auto it = values_.find(key);
 
-        if (it == values_.end()) {
-            this->values_.emplace(key, new Value(value));
-        }
-        else {
-            //((Value<T> *)this->values_.at(key))->set(value);
-            ((Value<T> *)it->second)->set(value);
+        if (this->contains(key))
+            ((Value<T> *)this->values_.at(key))->set(value);
+        else{
+            //std::cout << "2\n";
+            //int i =0;
+            //Value<T> *ptr = new Value<T>(value);
+            this->values_.emplace(key, new Value<T>(value));
         }
 
     }
@@ -52,13 +49,13 @@ public:
     template <typename T>
     T* get(const std::string& key) {
         
-        auto it = values_.find(key);
-
-        if (it == values_.end())
-            return nullptr;
-        
-        return ((Value<T> *)it->second)->get();
+        if(this->contains(key)) {
+            return ((Value<T> *)this->values_.at(key))->get();
+        }
+        return nullptr;
     }
+
+    bool contains(const std::string& key);
 
 private:
     std::unordered_map<std::string, ValueBase*> values_;

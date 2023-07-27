@@ -32,7 +32,6 @@ public:
 private:
     T* value_;
 
-friend class Blackboard;
 
 };
 

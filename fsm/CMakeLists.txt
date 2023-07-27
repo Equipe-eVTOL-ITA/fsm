@@ -26,6 +26,7 @@ include_directories(include)
 add_library(fsm_lib SHARED
   src/fsm/state.cpp
   src/fsm/fsm.cpp
+  src/fsm/blackboard/blackboard.cpp
 )
 ament_export_targets(fsm_lib HAS_LIBRARY_TARGET)
  
