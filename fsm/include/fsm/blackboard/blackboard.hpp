@@ -7,8 +7,6 @@
 #include <memory>
 #include <string>
 
-#include <iostream>
-
 namespace fsm {
 
 class Blackboard {
@@ -22,13 +20,9 @@ public:
         
         if (this->contains(key))
             ((Value<T> *)this->values_.at(key))->set(value);
-    
-        else {
-            //std::cout << "1\n";
-            //int i =0;
-            //auto hm = new Value<T>(value);
+        else 
             this->values_.insert({key, new Value<T>(value)});
-        }
+
 
     }
 
@@ -37,12 +31,8 @@ public:
 
         if (this->contains(key))
             ((Value<T> *)this->values_.at(key))->set(value);
-        else{
-            //std::cout << "2\n";
-            //int i =0;
-            //Value<T> *ptr = new Value<T>(value);
+        else
             this->values_.emplace(key, new Value<T>(value));
-        }
 
     }
 

@@ -5,9 +5,7 @@ using namespace fsm;
 
 class FooState : public State {
 public:
-    FooState() : State({{"%10", "BAR"},
-                        {">100", "FINISHED"},
-                        {"SEG_FAULT", "SEG_FAULT"}}) {}
+    FooState() : State() {}
 
     std::string act(Blackboard &blackboard) override {
 
@@ -29,9 +27,7 @@ public:
 
 class BarState : public State {
 public:
-    BarState() : State({{"TRUE", "FOO"},
-                        {"SEG_FAULT", "SEG_FAULT"}}), 
-                counter_{0} {}
+    BarState() : State(), counter_{0} {}
 
     std::string act(Blackboard &blackboard) override {
 
@@ -58,7 +54,12 @@ public:
 int main() {
     CounterFSM counter_fsm;
     counter_fsm.add_state("FOO", std::make_unique<FooState>());
+    counter_fsm.add_transitions("FOO", {{"%10", "BAR"},
+                                        {">100", "FINISHED"},
+                                        {"SEG_FAULT", "SEG_FAULT"}});
     counter_fsm.add_state("BAR", std::make_unique<BarState>());
+    counter_fsm.add_transitions("BAR", {{"TRUE", "FOO"},
+                                        {"SEG_FAULT", "SEG_FAULT"}});
 
     while (!counter_fsm.is_finished())
         counter_fsm.execute();

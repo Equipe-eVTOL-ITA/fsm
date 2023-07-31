@@ -19,6 +19,13 @@ public:
 
     void add_state(std::string name, std::unique_ptr<State> state);
 
+    void add_transition(const std::string &current_state,
+                        const std::string &transition, 
+                        const std::string &next_state);
+
+    void add_transitions(const std::string &current_state, 
+                         const std::unordered_map<std::string,std::string> &transitions);
+
     void set_initial_state(std::string state_name);
 
     void execute();
@@ -57,7 +64,7 @@ private:
 
     class InitialState : public State {
     public:
-        InitialState() : State({{"UNIQUE_TRANSITION", ""}}) {};
+        InitialState();
         std::string act(Blackboard &blackboard) override;
     };
     

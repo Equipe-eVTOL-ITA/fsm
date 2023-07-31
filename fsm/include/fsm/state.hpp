@@ -12,10 +12,11 @@ namespace fsm {
 class State
 {
 public:
-    State(std::unordered_map<std::string,std::string> transitions);
+    State() = default;
 private:
 
-
+    void add_transition(const std::string &outcome, const std::string &next_state);
+    void add_transitions(const std::unordered_map<std::string,std::string> &transitions);
     const std::unordered_map<std::string,std::string>& get_transitions();
 
     virtual std::string act(Blackboard &blackboard) = 0;

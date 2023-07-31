@@ -9,7 +9,7 @@ using namespace fsm;
 
 class FooState : public State {
 public:
-    FooState() : State({{">15", "FINISHED"}}), counter_{0} {}
+    FooState() : State(), counter_{0} {}
 
     std::string act(Blackboard &blackboard) override {
         (void)blackboard;
@@ -29,6 +29,7 @@ public:
     void on_exit(Blackboard &blackboard) override {
         (void)blackboard;
         std::cout << "Exiting FooState.\n";
+        std::cout << "Counter = " << this->counter_ << std::endl;
     }
 
 private:
@@ -38,6 +39,7 @@ private:
 int main() {
     FSM counter_fsm({"FINISHED"});
     counter_fsm.add_state("FOO", std::make_unique<FooState>());
+    counter_fsm.add_transition("FOO", ">15", "FINISHED");
 
     while (!counter_fsm.is_finished())
         counter_fsm.execute();
